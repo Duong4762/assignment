@@ -5,12 +5,10 @@ import com.demo.assignment.dto.ResponseDto;
 import com.demo.assignment.dto.thongTinDangNhap.ThongTinDangNhap;
 import com.demo.assignment.service.QuanLyNguoiDungService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/QuanLyNguoiDung")
 public class QuanLyNguoiDungController {
 
