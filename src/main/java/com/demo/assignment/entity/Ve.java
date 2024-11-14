@@ -20,7 +20,7 @@ public class Ve {
     @JsonBackReference
     private LichChieu lichChieu;
 
-    @OneToMany(mappedBy = "ve", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "ve", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Ghe> ghes;
 
     @ManyToOne
