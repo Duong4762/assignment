@@ -3,11 +3,14 @@ package com.demo.assignment.controller;
 import com.demo.assignment.dto.ResponseDto;
 import com.demo.assignment.dto.phim.ThongTinSuaPhimDto;
 import com.demo.assignment.dto.phim.ThongTinTaoPhimDto;
+import com.demo.assignment.entity.DanhGia;
 import com.demo.assignment.service.QuanLyPhimService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin("*")
@@ -36,5 +39,13 @@ public class QuanLyPhimController {
     @DeleteMapping("/XoaPhim")
     public ResponseDto XoaPhim(@RequestParam(name = "MaPhim") int maPhim){
         return quanLyPhimService.deletePhim(maPhim);
+    }
+    @PostMapping("/ThemDanhGia")
+    public ResponseDto themDanhGia(@RequestParam int maPhim, @RequestBody DanhGia danhGia){
+        return quanLyPhimService.addRating(maPhim, danhGia);
+    }
+    @GetMapping("/LayDanhGiaPhim")
+    public List<DanhGia> layDanhGiaPhim(@RequestParam int maPhim){
+        return quanLyPhimService.getRating(maPhim);
     }
 }

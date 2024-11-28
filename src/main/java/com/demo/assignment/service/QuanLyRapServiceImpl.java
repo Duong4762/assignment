@@ -9,6 +9,9 @@ import com.demo.assignment.dto.thongTinLichChieuPhim.CumRapChieuDto;
 import com.demo.assignment.dto.thongTinLichChieuPhim.HeThongRapChieuDto;
 import com.demo.assignment.dto.thongTinLichChieuPhim.LichChieuPhimDto;
 import com.demo.assignment.dto.thongTinLichChieuPhim.ThongTinLichChieuPhimDto;
+import com.demo.assignment.dto.thongTinLichChieuTheoCumRap.ThongTinLichChieu;
+import com.demo.assignment.dto.thongTinLichChieuTheoCumRap.ThongTinPhim;
+import com.demo.assignment.dto.thongTinLichChieuTheoCumRap.ThongTinRap;
 import com.demo.assignment.entity.*;
 import com.demo.assignment.repository.CumRapRepository;
 import com.demo.assignment.repository.HeThongRapRepository;
@@ -153,6 +156,7 @@ public class QuanLyRapServiceImpl implements QuanLyRapService {
                 heThongRapChieuDto.setCumRapChieu(cumRapChieu);
                 heThongRapChieuDto.setMaHeThongRap(heThongRap.getMaHeThongRap());
                 heThongRapChieuDto.setTenHeThongRap(heThongRap.getTenHeThongRap());
+                heThongRapChieuDto.setLogo(heThongRap.getLogo());
                 heThongRapChieu.add(heThongRapChieuDto);
             }
             thongTinLichChieuPhimDto.setHeThongRapChieu(heThongRapChieu);
@@ -293,5 +297,44 @@ public class QuanLyRapServiceImpl implements QuanLyRapService {
             logger.error(e.getMessage());
         }
         return responseDto;
+    }
+
+    @Override
+    public List<ThongTinRap> layDanhSachLichChieuTheoCumRap(int idCumRap) {
+        CumRap cumRap = cumRapRepository.findById(idCumRap).get();
+        List<Rap> raps = cumRap.getDanhSachRap();
+        List<ThongTinRap> thongTinRaps = new ArrayList<>();
+        for (Rap rap : raps) {
+            Map<Integer, List<ThongTinLichChieu>> mapLichChieuTheoPhim = new HashMap<>();
+
+            List<LichChieu> lichChieus = rap.getLichChieus();
+            for (LichChieu lichChieu : lichChieus) {
+                Phim phim = lichChieu.getPhim();
+                ThongTinLichChieu thongTinLichChieu = new ThongTinLichChieu();
+                thongTinLichChieu.setMaLichChieu(lichChieu.getMaLichChieu());
+                thongTinLichChieu.setNgayChieuGioChieu(lichChieu.getNgayChieuGioChieu());
+                if(mapLichChieuTheoPhim.containsKey(phim.getMaPhim())){
+                    List<ThongTinLichChieu> thongTinLichChieus  = mapLichChieuTheoPhim.get(phim.getMaPhim());
+                    thongTinLichChieus.add(thongTinLichChieu);
+                } else {
+                    List<ThongTinLichChieu> thongTinLichChieus  = new ArrayList<>();
+                    thongTinLichChieus.add(thongTinLichChieu);
+                    mapLichChieuTheoPhim.put(phim.getMaPhim(), thongTinLichChieus);
+                }
+            }
+            List<ThongTinPhim> thongTinPhims = new ArrayList<>();
+            for(int i : mapLichChieuTheoPhim.keySet()){
+                ThongTinPhim thongTinPhim = new ThongTinPhim();
+                thongTinPhim.setTenPhim(phimRepository.findById(i).get().getTenPhim());
+                thongTinPhim.setHinhAnh(phimRepository.findById(i).get().getHinhAnh());
+                thongTinPhim.setDanhSachLichChieu(mapLichChieuTheoPhim.get(i));
+                thongTinPhims.add(thongTinPhim);
+            }
+            ThongTinRap thongTinRap = new ThongTinRap();
+            thongTinRap.setTenRap(rap.getTenRap());
+            thongTinRap.setDanhSachPhim(thongTinPhims);
+            thongTinRaps.add(thongTinRap);
+        }
+        return thongTinRaps;
     }
 }

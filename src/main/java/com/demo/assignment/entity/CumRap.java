@@ -14,7 +14,6 @@ import java.util.List;
 public class CumRap {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private int id;
     @Column(name = "ma_cum_rap")
     private String maCumRap;
@@ -23,7 +22,7 @@ public class CumRap {
     @Column(name = "dia_chi")
     private String diaChi;
 
-    @OneToMany(mappedBy = "cumRap", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "cumRap", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Rap> danhSachRap;
 

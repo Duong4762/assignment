@@ -127,7 +127,6 @@ public class QuanLyNguoiDungServiceImpl implements QuanLyNguoiDungService {
         logger.info("Lay thong tin tai khoan: " + nguoiDung.getTaiKhoan());
         ResponseThongTinNguoiDungDto responseThongTinNguoiDungDto = new ResponseThongTinNguoiDungDto();
         responseThongTinNguoiDungDto.setTaiKhoan(nguoiDung.getTaiKhoan());
-        responseThongTinNguoiDungDto.setMatKhau(nguoiDung.getMatKhau());
         responseThongTinNguoiDungDto.setHoTen(nguoiDung.getHoTen());
         responseThongTinNguoiDungDto.setEmail(nguoiDung.getEmail());
         responseThongTinNguoiDungDto.setSoDT(nguoiDung.getSoDT());

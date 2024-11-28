@@ -1,9 +1,12 @@
 package com.demo.assignment.controller;
 
 import com.demo.assignment.dto.ResponseDto;
+import com.demo.assignment.dto.thongTinLichChieuTheoCumRap.ThongTinRap;
 import com.demo.assignment.service.QuanLyRapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin("*")
@@ -22,5 +25,9 @@ public class QuanLyRapController {
     @GetMapping("/LayThongTinLichChieuHeThongRap")
     public ResponseDto layThongTinLichChieuHeThongRap(@RequestParam(required = false, defaultValue = "GP01") String maNhom){
         return quanLyRapService.layThongTinLichChieuHeThongRap(maNhom);
+    }
+    @GetMapping("/LayDanhSachLichChieuTheoCumRap")
+    public List<ThongTinRap> layDanhSachLichChieuTheoCumRap(@RequestParam int idCumRap){
+        return quanLyRapService.layDanhSachLichChieuTheoCumRap(idCumRap);
     }
 }

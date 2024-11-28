@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 public class ResponseThongTinNguoiDungDto {
     private String taiKhoan;
-    private String matKhau;
     private String hoTen;
     private String email;
     private String soDT;

@@ -11,6 +11,6 @@ public class ThongTinTaoPhimDto {
     private boolean dangChieu;
     private boolean sapChieu;
     private boolean hot;
-    private double danhGia;
+//    private double danhGia;
     private MultipartFile hinhAnh;
 }

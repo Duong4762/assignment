@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,12 +38,25 @@ public class QuanLyVeServiceImpl implements QuanLyVeService {
     @Override
     public ResponseDto themLichChieu(LichChieuDto lichChieuDto) {
         logger.info("Du lieu nhan vao: " + lichChieuDto);
+        LocalDateTime newStartTime = LocalDateTime.parse(lichChieuDto.getNgayChieuGioChieu(), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        LocalDateTime newEndTime = LocalDateTime.parse(lichChieuDto.getNgayChieuGioChieu(), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")).plusMinutes(120);
         int maRap = Integer.parseInt(lichChieuDto.getMaRap());
+        if (lichChieuRepository.existsOverlappingSchedules(maRap, newStartTime, newEndTime)) {
+            ResponseDto responseDto = new ResponseDto();
+            responseDto.setStatusCode(400);
+            responseDto.setMessage("Lịch chiếu bị trùng");
+            responseDto.setContent("Lịch chiếu bị trùng");
+            responseDto.setDateTime(LocalDateTime.now().toString());
+            responseDto.setMessageConstants(null);
+            return responseDto;
+        }
         Rap rap = rapRepository.findById(maRap).get();
         List<LichChieu> lichChieuListTheoRap = rap.getLichChieus();
         LichChieu lichChieu = new LichChieu();
         lichChieu.setNgayChieuGioChieu(lichChieuDto.getNgayChieuGioChieu());
         lichChieu.setGiaVe(lichChieuDto.getGiaVe());
+        lichChieu.setStartTime(newStartTime);
+        lichChieu.setEndTime(newEndTime);
         lichChieuListTheoRap.add(lichChieu);
         rap.setLichChieus(lichChieuListTheoRap);
         lichChieu.setRap(rap);

@@ -23,7 +23,7 @@ public class QuanLyNguoiDungController {
     public ResponseDto themNguoiDung(@RequestBody NguoiDungDto nguoiDungDto){
         return quanLyNguoiDungService.dangKy(nguoiDungDto);
     }
-    @PostMapping("/ThongTinTaiKhoan")
+    @GetMapping("/ThongTinTaiKhoan")
     public ResponseDto layThongTinTaiKhoan(){
         return quanLyNguoiDungService.layThongTinTaiKhoan();
     }

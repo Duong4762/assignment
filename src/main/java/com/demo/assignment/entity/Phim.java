@@ -28,7 +28,7 @@ public class Phim {
     private String maNhom;
     @Column(name = "ngay_khoi_chieu")
     private String ngayKhoiChieu;
-    @Column(name = "danh_gia")
+    @Column(name = "danh_gia", nullable = true)
     private double danhGia;
     private boolean hot;
     @Column(name = "dang_chieu")
@@ -39,6 +39,10 @@ public class Phim {
     @OneToMany(mappedBy = "phim", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<LichChieu> lichChieus;
+
+    @OneToMany(mappedBy = "phim", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<DanhGia> danhGias;
 
     @Override
     public String toString() {

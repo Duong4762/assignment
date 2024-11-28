@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -20,6 +21,13 @@ public class LichChieu {
     private String ngayChieuGioChieu;
     @Column(name = "gia_ve")
     private double giaVe;
+
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime startTime;
+
+    @Column(name = "end_time", nullable = false)
+    private LocalDateTime endTime;
+
 
     @ManyToOne
     @JoinColumn(name = "ma_phim")

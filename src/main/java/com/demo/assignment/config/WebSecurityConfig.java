@@ -25,7 +25,8 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig{
-    private String[] blackList = {"/api/QuanLyDatVe/TaoLichChieu", "/api/QuanLyDatVe/DatVe", "/api/QuanLyPhim/CapNhatPhimUpload", "/api/QuanLyPhim/XoaPhim", "/api/QuanLyNguoiDung/ThongTinTaiKhoan"};
+    private String[] blackList = {"/api/QuanLyDatVe/TaoLichChieu", "/api/QuanLyDatVe/DatVe"
+            , "/api/QuanLyPhim/CapNhatPhimUpload", "/api/QuanLyPhim/XoaPhim", "/api/QuanLyNguoiDung/ThongTinTaiKhoan", "/api/QuanLyPhim/ThemDanhGia"};
     @Autowired
     UserService userService;
 

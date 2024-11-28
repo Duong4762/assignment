@@ -23,8 +23,9 @@ public class Rap {
     @JsonBackReference
     private CumRap cumRap;
 
-    @OneToMany(mappedBy = "rap", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "rap", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
+    @JsonIgnore
     private List<LichChieu> lichChieus;
 
 }
