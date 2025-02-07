@@ -6,6 +6,8 @@ import com.demo.assignment.dto.phim.ThongTinTaoPhimDto;
 import com.demo.assignment.entity.DanhGia;
 import com.demo.assignment.entity.NguoiDung;
 import com.demo.assignment.entity.Phim;
+import com.demo.assignment.exception.AppException;
+import com.demo.assignment.exception.ErrorCode;
 import com.demo.assignment.repository.DanhGiaRepository;
 import com.demo.assignment.repository.PhimRepository;
 import com.demo.assignment.security.CustomUserDetails;
@@ -35,75 +37,59 @@ public class QuanLyPhimServiceImpl implements QuanLyPhimService{
     @Override
     public ResponseDto getPhimByNameAndGroup(String name, String group) {
         logger.info("Tim phim thuoc nhom " + group + " co ten " + name);
-        ResponseDto responseDto = new ResponseDto();
         try {
             List<Phim> list = phimRepository.findByTenPhimContainingIgnoreCaseAndMaNhom(name, group);
-            responseDto.setContent(list);
-            responseDto.setStatusCode(200);
-            responseDto.setMessage("Xử lý thành công!");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.info("Lay du lieu phim thanh cong");
+            return ResponseDto.builder()
+                    .statusCode(200)
+                    .message("Xử lý thành công!")
+                    .content(list)
+                    .dateTime(LocalDateTime.now().toString())
+                    .build();
         } catch (Exception e) {
-            responseDto.setStatusCode(400);
-            responseDto.setMessage("Không tìm thấy tài nguyên!");
-            responseDto.setContent("");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.error("Lay du lieu phim that bai: " + e.getMessage());
+            throw new AppException(ErrorCode.NOT_FOUND);
         }
-        return responseDto;
     }
 
     @Override
     public ResponseDto getPhimByPhimCode(int maPhim) {
         logger.info("Tim phim co ma phim " + maPhim);
-        ResponseDto responseDto = new ResponseDto();
         try {
             Phim phim = phimRepository.findById(maPhim).get();
-            responseDto.setContent(phim);
-            responseDto.setStatusCode(200);
-            responseDto.setMessage("Xử lý thành công!");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.info("Lay du lieu phim thanh cong");
+            return ResponseDto.builder()
+                    .statusCode(200)
+                    .message("Xử lý thành công!")
+                    .content(phim)
+                    .dateTime(LocalDateTime.now().toString())
+                    .build();
         } catch (Exception e) {
-            responseDto.setStatusCode(400);
-            responseDto.setMessage("Không tìm thấy tài nguyên!");
-            responseDto.setContent("Mã phim không hợp lệ");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.error("Lay du lieu phim that bai: " + e.getMessage());
+            throw new AppException(ErrorCode.NOT_FOUND);
         }
-        return responseDto;
     }
 
     @Override
     public ResponseDto deletePhim(int maPhim) {
         logger.info("Xoa phim co ma phim " + maPhim);
-        ResponseDto responseDto = new ResponseDto();
         try {
-            responseDto.setStatusCode(200);
-            responseDto.setMessage("Xóa phim thành công");
-            responseDto.setContent("Xóa phim thành công");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             phimRepository.deleteById(maPhim);
             logger.info("Xoa phim thanh cong");
+            return ResponseDto.builder()
+                    .statusCode(200)
+                    .message("Xóa phim thành công")
+                    .content("Xóa phim thành công")
+                    .dateTime(LocalDateTime.now().toString())
+                    .build();
         } catch (Exception e) {
-            responseDto.setStatusCode(400);
-            responseDto.setMessage("Xóa phim thất bại");
-            responseDto.setContent("Phim đã có lịch chiếu");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.error("Xoa phim that bai: " + e.getMessage());
+            throw new AppException(ErrorCode.DELETE_FILM_FAILED);
         }
-        return responseDto;
     }
 
     @Override
     public ResponseDto addPhim(ThongTinTaoPhimDto thongTinTaoPhimDto) {
-        ResponseDto responseDto = new ResponseDto();
         try {
             logger.info("Tao phim moi");
             if (thongTinTaoPhimDto.getHinhAnh() != null && !thongTinTaoPhimDto.getHinhAnh().isEmpty()) {
@@ -127,33 +113,24 @@ public class QuanLyPhimServiceImpl implements QuanLyPhimService{
                 phim.setSapChieu(thongTinTaoPhimDto.isSapChieu());
                 phim = phimRepository.save(phim);
                 logger.info("Them phim thanh cong voi id: " + phim.getMaPhim());
-                responseDto.setContent("");
-                responseDto.setStatusCode(200);
-                responseDto.setMessage("Thêm phim thành công");
-                responseDto.setDateTime(LocalDateTime.now().toString());
-                responseDto.setMessageConstants(null);
+                return ResponseDto.builder()
+                        .statusCode(200)
+                        .content("")
+                        .message("Thêm phim thành công")
+                        .dateTime(LocalDateTime.now().toString())
+                        .build();
             } else {
-                responseDto.setStatusCode(500);
-                responseDto.setMessage("Dữ liệu không hợp lệ");
-                responseDto.setContent("");
-                responseDto.setDateTime(LocalDateTime.now().toString());
-                responseDto.setMessageConstants(null);
                 logger.info("Them phim that bai");
+                throw new AppException(ErrorCode.ADD_FILM_FAILED);
             }
         } catch (Exception e){
-            responseDto.setStatusCode(500);
-            responseDto.setMessage("Dữ liệu không hợp lệ");
-            responseDto.setContent("");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.error("Them phim that bai: " + e.getMessage());
+            throw new AppException(ErrorCode.ADD_FILM_FAILED);
         }
-        return responseDto;
     }
 
     @Override
     public ResponseDto updatePhim(ThongTinSuaPhimDto thongTinSuaPhimDto) {
-        ResponseDto responseDto = new ResponseDto();
         try {
             logger.info("Sua phim co id: " + thongTinSuaPhimDto.getMaPhim());
             if (thongTinSuaPhimDto.getHinhAnh() != null && !thongTinSuaPhimDto.getHinhAnh().isEmpty()) {
@@ -179,28 +156,20 @@ public class QuanLyPhimServiceImpl implements QuanLyPhimService{
                 phim.setSapChieu(thongTinSuaPhimDto.isSapChieu());
                 phim = phimRepository.save(phim);
                 logger.info("Sua phim thanh cong voi id: " + phim.getMaPhim());
-                responseDto.setContent("");
-                responseDto.setStatusCode(200);
-                responseDto.setMessage("Sửa phim thành công");
-                responseDto.setDateTime(LocalDateTime.now().toString());
-                responseDto.setMessageConstants(null);
+                return ResponseDto.builder()
+                        .statusCode(200)
+                        .content("")
+                        .message("Sửa phim thành công")
+                        .dateTime(LocalDateTime.now().toString())
+                        .build();
             } else {
-                responseDto.setStatusCode(500);
-                responseDto.setMessage("Dữ liệu không hợp lệ");
-                responseDto.setContent("");
-                responseDto.setDateTime(LocalDateTime.now().toString());
-                responseDto.setMessageConstants(null);
                 logger.info("Sua phim that bai");
+                throw new AppException(ErrorCode.ADD_FILM_FAILED);
             }
         } catch (Exception e){
-            responseDto.setStatusCode(500);
-            responseDto.setMessage("Dữ liệu không hợp lệ");
-            responseDto.setContent("");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.error("Sua phim that bai: " + e.getMessage());
+            throw new AppException(ErrorCode.ADD_FILM_FAILED);
         }
-        return responseDto;
     }
 
     @Override

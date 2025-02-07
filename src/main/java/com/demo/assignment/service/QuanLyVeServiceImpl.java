@@ -8,6 +8,8 @@ import com.demo.assignment.dto.lichChieu.LichChieuDto;
 import com.demo.assignment.dto.ve.GheDto;
 import com.demo.assignment.dto.ve.VeDto;
 import com.demo.assignment.entity.*;
+import com.demo.assignment.exception.AppException;
+import com.demo.assignment.exception.ErrorCode;
 import com.demo.assignment.repository.*;
 import com.demo.assignment.security.CustomUserDetails;
 import org.slf4j.Logger;
@@ -42,13 +44,7 @@ public class QuanLyVeServiceImpl implements QuanLyVeService {
         LocalDateTime newEndTime = LocalDateTime.parse(lichChieuDto.getNgayChieuGioChieu(), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")).plusMinutes(120);
         int maRap = Integer.parseInt(lichChieuDto.getMaRap());
         if (lichChieuRepository.existsOverlappingSchedules(maRap, newStartTime, newEndTime)) {
-            ResponseDto responseDto = new ResponseDto();
-            responseDto.setStatusCode(400);
-            responseDto.setMessage("Lịch chiếu bị trùng");
-            responseDto.setContent("Lịch chiếu bị trùng");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
-            return responseDto;
+            throw new AppException(ErrorCode.CANNOT_CREATE_SCHEDULE);
         }
         Rap rap = rapRepository.findById(maRap).get();
         List<LichChieu> lichChieuListTheoRap = rap.getLichChieus();
@@ -70,13 +66,12 @@ public class QuanLyVeServiceImpl implements QuanLyVeService {
         lichChieu.setPhongVe(phongVe);
         lichChieu = this.lichChieuRepository.save(lichChieu);
         logger.info("Da them lich chieu vao csdl: " + lichChieu);
-        ResponseDto responseDto = new ResponseDto();
-        responseDto.setStatusCode(200);
-        responseDto.setMessage("Xử lý thành công!");
-        responseDto.setContent("Tạo lịch chiếu thành công");
-        responseDto.setDateTime(LocalDateTime.now().toString());
-        responseDto.setMessageConstants(null);
-        return responseDto;
+        return ResponseDto.builder()
+                .statusCode(200)
+                .message("Xử lý thành công!")
+                .content("Tạo lịch chiếu thành công")
+                .dateTime(LocalDateTime.now().toString())
+                .build();
     }
     @Override
     public ResponseDto datVe(VeDto veDto) {
@@ -111,20 +106,18 @@ public class QuanLyVeServiceImpl implements QuanLyVeService {
 
         veRepository.save(ve);
         logger.info("Dat ve thanh cong");
-        ResponseDto responseDto = new ResponseDto();
-        responseDto.setStatusCode(200);
-        responseDto.setMessage("Xử lý thành công!");
-        responseDto.setContent("Đặt vé thành công");
-        responseDto.setDateTime(LocalDateTime.now().toString());
-        responseDto.setMessageConstants(null);
-        return responseDto;
+        return ResponseDto.builder()
+                .statusCode(200)
+                .message("Xử lý thành công!")
+                .content("Đặt vé thành công")
+                .dateTime(LocalDateTime.now().toString())
+                .build();
     }
 
     @Override
     public ResponseDto layDanhSachPhongVe(int maLichChieu) {
         logger.info("Lay thong tin phong ve thao ma lich chieu: " + maLichChieu);
         PhongVeDto phongVeDto = null;
-        ResponseDto responseDto = new ResponseDto();
         try {
             LichChieu lichChieu = lichChieuRepository.findById(maLichChieu).get();
             Rap rap = lichChieu.getRap();
@@ -156,23 +149,18 @@ public class QuanLyVeServiceImpl implements QuanLyVeService {
                 danhSachGhe.add(thongTinGheTheoPhongVeDto);
             }
             phongVeDto.setDanhSachGhe(danhSachGhe);
-            responseDto.setStatusCode(200);
-            responseDto.setMessage("Xử lý thành công!");
-            responseDto.setContent(phongVeDto);
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.info("Lay thong tin phong ve thanh cong");
+            return ResponseDto.builder()
+                    .statusCode(200)
+                    .message("Xử lý thành công!")
+                    .content(phongVeDto)
+                    .dateTime(LocalDateTime.now().toString())
+                    .build();
         } catch (Exception e) {
-            responseDto.setStatusCode(500);
-            responseDto.setMessage("Dữ liệu không hợp lệ!");
-            responseDto.setContent("Mã lịch chiếu không hợp lệ!");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.info("Lay danh sach phong ve that bai");
             logger.error(e.getMessage());
+            throw new AppException(ErrorCode.NOT_FOUND);
         }
-
-        return responseDto;
     }
 
 }

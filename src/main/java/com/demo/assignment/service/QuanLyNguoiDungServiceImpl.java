@@ -10,6 +10,8 @@ import com.demo.assignment.dto.ve.VeTheoThongTinNguoiDungDto;
 import com.demo.assignment.entity.Ghe;
 import com.demo.assignment.entity.NguoiDung;
 import com.demo.assignment.entity.Ve;
+import com.demo.assignment.exception.AppException;
+import com.demo.assignment.exception.ErrorCode;
 import com.demo.assignment.repository.NguoiDungRepository;
 import com.demo.assignment.security.CustomUserDetails;
 import com.demo.assignment.security.JwtTokenProvider;
@@ -59,21 +61,14 @@ public class QuanLyNguoiDungServiceImpl implements QuanLyNguoiDungService {
             nguoiDung.setHoTen(nguoiDungDto.getHoTen());
             nguoiDungRepository.save(nguoiDung);
             logger.info("Them nguoi dung thanh cong");
-            ResponseDto responseDto = new ResponseDto();
-            responseDto.setStatusCode(200);
-            responseDto.setMessage("Xử lý thành công!");
-            responseDto.setContent("Đăng ký thành công");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
-            return responseDto;
+            return ResponseDto.builder()
+                    .statusCode(200)
+                    .message("Xử lý thành công!")
+                    .content("Đăng ký thành công")
+                    .dateTime(LocalDateTime.now().toString())
+                    .build();
         } else{
-            ResponseDto responseDto = new ResponseDto();
-            responseDto.setStatusCode(400);
-            responseDto.setMessage("Thất bại");
-            responseDto.setContent("Tài khoản đã tồn tại");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
-            return responseDto;
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
     }
 
@@ -99,24 +94,18 @@ public class QuanLyNguoiDungServiceImpl implements QuanLyNguoiDungService {
             responseDangNhap.setMaNhom(nguoiDung.getMaNhom());
             responseDangNhap.setMaLoaiNguoiDung(nguoiDung.getLoaiNguoiDung());
             responseDangNhap.setAccessToken(jwt);
-            responseDto = new ResponseDto();
-            responseDto.setStatusCode(200);
-            responseDto.setMessage("Xử lý thành công!");
-            responseDto.setContent(responseDangNhap);
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.info("Dang nhap thanh cong");
+            return ResponseDto.builder()
+                    .statusCode(200)
+                    .message("Xử lý thành công!")
+                    .content(responseDangNhap)
+                    .dateTime(LocalDateTime.now().toString())
+                    .build();
         } catch (AuthenticationException e) {
             logger.error(e.getMessage());
             logger.info("Dang nhap that bai");
-            responseDto = new ResponseDto();
-            responseDto.setStatusCode(404);
-            responseDto.setMessage("Không tìm thấy tài nguyên");
-            responseDto.setContent("Tài khoản hoặc mật khẩu không đúng!");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
+            throw new AppException(ErrorCode.LOGIN_FAILED);
         }
-        return responseDto;
     }
 
     @Override
@@ -159,13 +148,12 @@ public class QuanLyNguoiDungServiceImpl implements QuanLyNguoiDungService {
             veTheoThongTinNguoiDungDtos.add(veTheoThongTinNguoiDungDto);
         }
         responseThongTinNguoiDungDto.setThongTinDatVe(veTheoThongTinNguoiDungDtos);
-        ResponseDto responseDto = new ResponseDto();
-        responseDto.setStatusCode(200);
-        responseDto.setMessage("Xử lý thành công!");
-        responseDto.setContent(responseThongTinNguoiDungDto);
-        responseDto.setDateTime(LocalDateTime.now().toString());
-        responseDto.setMessageConstants(null);
         logger.info("Lay thong tin nguoi dung thanh cong");
-        return responseDto;
+        return ResponseDto.builder()
+                .statusCode(200)
+                .message("Xử lý thành công!")
+                .content(responseThongTinNguoiDungDto)
+                .dateTime(LocalDateTime.now().toString())
+                .build();
     }
 }

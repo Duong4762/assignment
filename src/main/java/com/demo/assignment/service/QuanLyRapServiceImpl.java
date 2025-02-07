@@ -13,6 +13,8 @@ import com.demo.assignment.dto.thongTinLichChieuTheoCumRap.ThongTinLichChieu;
 import com.demo.assignment.dto.thongTinLichChieuTheoCumRap.ThongTinPhim;
 import com.demo.assignment.dto.thongTinLichChieuTheoCumRap.ThongTinRap;
 import com.demo.assignment.entity.*;
+import com.demo.assignment.exception.AppException;
+import com.demo.assignment.exception.ErrorCode;
 import com.demo.assignment.repository.CumRapRepository;
 import com.demo.assignment.repository.HeThongRapRepository;
 import com.demo.assignment.repository.LichChieuRepository;
@@ -43,35 +45,25 @@ public class QuanLyRapServiceImpl implements QuanLyRapService {
     @Override
     public ResponseDto layThongTinCumRapTheoHeThong(String maHeThongRap) {
         logger.info("Lay thong tin cum rap theo ma he thong rap: " + maHeThongRap);
-        ResponseDto responseDto = new ResponseDto();
         try {
             HeThongRap heThongRap = heThongRapRepository.findByMaHeThongRap(maHeThongRap);
-            responseDto.setStatusCode(200);
-            responseDto.setMessage("Xử lý thành công!");
-            responseDto.setContent(heThongRap.getCumRaps());
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.info("Lay thong tin cum rap thanh cong");
+            return ResponseDto.builder()
+                    .statusCode(200)
+                    .message("Xử lý thành công!")
+                    .content(heThongRap.getCumRaps())
+                    .dateTime(LocalDateTime.now().toString())
+                    .build();
         } catch (Exception e) {
-            responseDto.setStatusCode(400);
-            responseDto.setMessage("Không tìm thấy tài nguyên!");
-            responseDto.setContent("Mã hệ thống rạp không tồn tại!");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.error("Lay thong tin cum rap that bai: " + e.getMessage());
+            throw new AppException(ErrorCode.NOT_FOUND);
         }
-        return responseDto;
     }
 
     @Override
     public ResponseDto layThongTinLichChieuPhim(int maPhim) {
         logger.info("Lay thong tin lich chieu phim theo ma phim: " + maPhim);
-        ResponseDto responseDto = new ResponseDto();
         try {
-            responseDto.setStatusCode(200);
-            responseDto.setMessage("Xử lý thành công!");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             Phim phim = phimRepository.findById(maPhim).get();
             logger.info("Phim tim duoc: " + phim.getTenPhim());
             ThongTinLichChieuPhimDto thongTinLichChieuPhimDto = new ThongTinLichChieuPhimDto();
@@ -160,24 +152,23 @@ public class QuanLyRapServiceImpl implements QuanLyRapService {
                 heThongRapChieu.add(heThongRapChieuDto);
             }
             thongTinLichChieuPhimDto.setHeThongRapChieu(heThongRapChieu);
-            responseDto.setContent(thongTinLichChieuPhimDto);
             logger.info("Lay thong tin lich chieu phim thanh cong");
+            return ResponseDto.builder()
+                    .statusCode(200)
+                    .message("Xử lý thành công!")
+                    .content(thongTinLichChieuPhimDto)
+                    .dateTime(LocalDateTime.now().toString())
+                    .build();
         } catch (Exception e) {
-            responseDto.setStatusCode(400);
-            responseDto.setMessage("Không tìm thấy tài nguyên!");
-            responseDto.setContent("Mã phim không tồn tại!");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.info("Lay thong tin lich chieu phim that bai");
             logger.error(e.getMessage());
+            throw new AppException(ErrorCode.NOT_FOUND);
         }
-        return responseDto;
     }
 
     @Override
     public ResponseDto layThongTinLichChieuHeThongRap(String maNhom) {
         logger.info("Lay thong tin lich chieu he thong rap theo ma nhom: " + maNhom);
-        ResponseDto responseDto = new ResponseDto();
         try {
             List<LichChieu> lichChieuList = this.lichChieuRepository.findByPhim_MaNhom(maNhom);
             logger.info("Tim duoc " + lichChieuList.size() + " lich chieu");
@@ -282,21 +273,17 @@ public class QuanLyRapServiceImpl implements QuanLyRapService {
                 thongTinLichChieuHeThongRapDto.setMaNhom(maNhom);
                 thongTinLichChieuHeThongRapDtoList.add(thongTinLichChieuHeThongRapDto);
             }
-            responseDto.setStatusCode(200);
-            responseDto.setMessage("Xử lý thành công!");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
-            responseDto.setContent(thongTinLichChieuHeThongRapDtoList);
+            return ResponseDto.builder()
+                    .statusCode(200)
+                    .message("Xử lý thành công!")
+                    .content(thongTinLichChieuHeThongRapDtoList)
+                    .dateTime(LocalDateTime.now().toString())
+                    .build();
         } catch (Exception e) {
-            responseDto.setStatusCode(400);
-            responseDto.setMessage("Không tìm thấy tài nguyên!");
-            responseDto.setContent("Mã phim không tồn tại!");
-            responseDto.setDateTime(LocalDateTime.now().toString());
-            responseDto.setMessageConstants(null);
             logger.info("Lay thong tin lich chieu he tong rap that bai");
             logger.error(e.getMessage());
+            throw new AppException(ErrorCode.NOT_FOUND);
         }
-        return responseDto;
     }
 
     @Override
